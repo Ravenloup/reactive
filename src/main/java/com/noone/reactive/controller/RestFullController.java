@@ -3,8 +3,6 @@
  */
 package com.noone.reactive.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
@@ -18,6 +16,7 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
+import com.noone.reactive.ReactiveApplication;
 import com.noone.reactive.dbService.UserCrudRepository;
 import com.noone.reactive.entiry.User;
 import com.noone.reactive.handler.RequestHandlerFunction;
@@ -42,12 +41,19 @@ public class RestFullController {
 			  request -> ServerResponse.ok().syncBody(("Hello World"));
 			  
 	@RequestMapping(value="/messages", produces= {MediaType.APPLICATION_JSON_VALUE})
-    public Flux<User> allMessages(){
+    public Flux<String> allMessages() throws InterruptedException{
 		/*List<User> tShirts = repository.findByFirstName("sunil")
                 .collectList()
                 .block();
 		tShirts.forEach(System.out::println);*/
-        return handlerFunction.listUsers();
+		ReactiveApplication example = new ReactiveApplication();
+		Flux<String> f= example.getMessagesAsStream();
+        example.getMessagesAsStream().subscribe(msg -> System.out.println(msg.toUpperCase()));
+        example.handleMessage("een");
+        example.handleMessage("twee");
+        example.handleMessage("drie");
+        example.addMessage("sunil");
+        return f;
     }
 	
 	@GetMapping("/message")
