@@ -16,6 +16,15 @@ public class User {
 	@Id
 	private String id;
 	private String firstName;
+	public User() {
+		
+	}
+	public User(String firstName, String lastName, int age) {
+		super();
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.age = age;
+	}
 	private String lastName;
 	private int age;
 	
@@ -44,4 +53,10 @@ public class User {
 	public void setAge(int age) {
 		this.age = age;
 	}
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", age=" + age + "]";
+	}
+	
+	
 }

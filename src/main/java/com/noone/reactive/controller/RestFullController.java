@@ -3,11 +3,14 @@
  */
 package com.noone.reactive.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.server.HandlerFunction;
 import org.springframework.web.reactive.function.server.RequestPredicates;
@@ -15,6 +18,7 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
+import com.noone.reactive.dbService.UserCrudRepository;
 import com.noone.reactive.entiry.User;
 import com.noone.reactive.handler.RequestHandlerFunction;
 
@@ -28,12 +32,22 @@ import reactor.core.publisher.Mono;
 @RestController
 public class RestFullController {
 
-	@GetMapping("/messages")
-    Flux<String> allMessages(){
-        return Flux.just(
-            new StringBuilder().append("Sunil ").toString(),
-            new StringBuilder().append("Yadav").toString()
-        );
+
+	@Autowired
+	private RequestHandlerFunction handlerFunction;
+	
+	@Autowired
+    private UserCrudRepository repository;
+	HandlerFunction<ServerResponse> helloWorld =
+			  request -> ServerResponse.ok().syncBody(("Hello World"));
+			  
+	@RequestMapping(value="/messages", produces= {MediaType.APPLICATION_JSON_VALUE})
+    public Flux<User> allMessages(){
+		/*List<User> tShirts = repository.findByFirstName("sunil")
+                .collectList()
+                .block();
+		tShirts.forEach(System.out::println);*/
+        return handlerFunction.listUsers();
     }
 	
 	@GetMapping("/message")
@@ -49,10 +63,6 @@ public class RestFullController {
 	            new StringBuilder().append("message id = ").append(id).toString()
 		        );
 	}
-	@Autowired
-	RequestHandlerFunction handlerFunction;
-	HandlerFunction<ServerResponse> helloWorld =
-			  request -> ServerResponse.ok().syncBody(("Hello World"));
 	@Bean
 	public RouterFunction<ServerResponse> routes() {
 		User user = new User();
@@ -62,18 +72,18 @@ public class RestFullController {
 	  return
 	  		RouterFunctions.
 	  		        route(
-	  		        		RequestPredicates.GET("/"), helloWorld)
+	  		        		RequestPredicates.GET("/helloword"), helloWorld)
 	  		      .andRoute(
 	  		        		RequestPredicates.GET("/user"),
 	  		            request -> ServerResponse.ok().body(Mono.just(user), User.class))
 	  		    .andRoute(
   		        		RequestPredicates.GET("/get-user"), handlerFunction::getUsers)
-	  		        .andRoute(
-	  		        		RequestPredicates.GET("/{name}"),
+	  		    .andRoute(
+	  		        		RequestPredicates.GET("/name/{name}"),
 	  		            request -> ServerResponse.ok().body(Mono.just("hello, " + request.pathVariable("name") + "!"), String.class))
 	
 	  		        .andRoute(
-	  		        		RequestPredicates.GET("/**"),
+	  		        		RequestPredicates.GET("/default/**"),
 	  		            request -> ServerResponse.ok().body(Mono.just("fallback"), String.class))
 	  		      .andRoute(
 	  		        		RequestPredicates.POST("/user").and(RequestPredicates.contentType(MediaType.APPLICATION_JSON)), 

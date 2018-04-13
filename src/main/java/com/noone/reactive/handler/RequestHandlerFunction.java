@@ -36,4 +36,8 @@ public class RequestHandlerFunction {
 		return ServerResponse.ok().body(Flux.merge((repository.getUsers())), User.class);
 	}
 	
+	public Flux<User> listUsers(){
+		return repository.getUsers();
+	}
+	
 }

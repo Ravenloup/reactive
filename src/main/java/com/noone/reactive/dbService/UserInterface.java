@@ -15,4 +15,5 @@ import com.noone.reactive.entiry.User;
 @Service
 public interface UserInterface extends ReactiveMongoRepository<User, String> {
 
+	
 }
