@@ -6,6 +6,7 @@ package com.noone.reactive.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +30,7 @@ import reactor.core.publisher.Mono;
  *
  */
 @RestController
+@CrossOrigin("*")
 public class RestFullController {
 
 
@@ -40,7 +42,8 @@ public class RestFullController {
 	HandlerFunction<ServerResponse> helloWorld =
 			  request -> ServerResponse.ok().syncBody(("Hello World"));
 			  
-	@RequestMapping(value="/messages", produces= {MediaType.APPLICATION_JSON_VALUE})
+	@CrossOrigin("*")
+	@RequestMapping(value="/messages")
     public Flux<String> allMessages() throws InterruptedException{
 		/*List<User> tShirts = repository.findByFirstName("sunil")
                 .collectList()
